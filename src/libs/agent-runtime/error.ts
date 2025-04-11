@@ -3,16 +3,24 @@
 export const AgentRuntimeErrorType = {
   AgentRuntimeError: 'AgentRuntimeError', // Agent Runtime 模块运行时错误
   LocationNotSupportError: 'LocationNotSupportError',
+
   QuotaLimitReached: 'QuotaLimitReached',
+  InsufficientQuota: 'InsufficientQuota',
+
+  ModelNotFound: 'ModelNotFound',
+
   PermissionDenied: 'PermissionDenied',
+  ExceededContextWindow: 'ExceededContextWindow',
 
   InvalidProviderAPIKey: 'InvalidProviderAPIKey',
   ProviderBizError: 'ProviderBizError',
 
   InvalidOllamaArgs: 'InvalidOllamaArgs',
   OllamaBizError: 'OllamaBizError',
+  OllamaServiceUnavailable: 'OllamaServiceUnavailable',
 
   InvalidBedrockCredentials: 'InvalidBedrockCredentials',
+  InvalidVertexCredentials: 'InvalidVertexCredentials',
   StreamChunkError: 'StreamChunkError',
 
   InvalidGithubToken: 'InvalidGithubToken',
@@ -23,10 +31,6 @@ export const AgentRuntimeErrorType = {
    * @deprecated
    */
   NoOpenAIAPIKey: 'NoOpenAIAPIKey',
-  /**
-   * @deprecated
-   */
-  OpenAIBizError: 'OpenAIBizError',
 } as const;
 
 export const AGENT_RUNTIME_ERROR_SET = new Set<string>(Object.values(AgentRuntimeErrorType));

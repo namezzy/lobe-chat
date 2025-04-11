@@ -8,8 +8,9 @@ import { and, eq } from 'drizzle-orm/expressions';
 import type { NeonDatabase } from 'drizzle-orm/neon-serverless';
 import { Adapter, AdapterAccount } from 'next-auth/adapters';
 
+import { UserModel } from '@/database/models/user';
 import * as schema from '@/database/schemas';
-import { UserModel } from '@/database/server/models/user';
+import { AgentService } from '@/server/services/agent';
 import { merge } from '@/utils/merge';
 
 import {
@@ -65,19 +66,28 @@ export function LobeNextAuthDbAdapter(serverDB: NeonDatabase<typeof schema>): Ad
         const adapterUser = mapLobeUserToAdapterUser(existingUser);
         return adapterUser;
       }
+
       // create a new user if it does not exist
+      // Use id from provider if it exists, otherwise use id assigned by next-auth
+      // ref: https://github.com/lobehub/lobe-chat/pull/2935
+      const uid = providerAccountId ?? id;
       await UserModel.createUser(
         serverDB,
         mapAdapterUserToLobeUser({
           email,
           emailVerified,
           // Use providerAccountId as userid to identify if the user exists in a SSO provider
-          id: providerAccountId ?? id,
+          id: uid,
           image,
           name,
         }),
       );
-      return { ...user, id: providerAccountId ?? id };
+
+      // 3. Create an inbox session for the user
+      const agentService = new AgentService(serverDB, uid);
+      await agentService.createInbox();
+
+      return { ...user, id: uid };
     },
     async createVerificationToken(data): Promise<VerificationToken | null | undefined> {
       return serverDB

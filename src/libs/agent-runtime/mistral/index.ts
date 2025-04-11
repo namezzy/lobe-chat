@@ -1,7 +1,7 @@
+import type { ChatModelCard } from '@/types/llm';
+
 import { ModelProvider } from '../types';
 import { LobeOpenAICompatibleFactory } from '../utils/openaiCompatibleFactory';
-
-import { LOBE_DEFAULT_MODEL_LIST } from '@/config/aiModels';
 
 export interface MistralModelCard {
   capabilities: {
@@ -16,6 +16,9 @@ export interface MistralModelCard {
 export const LobeMistralAI = LobeOpenAICompatibleFactory({
   baseURL: 'https://api.mistral.ai/v1',
   chatCompletion: {
+    // Mistral API does not support stream_options: { include_usage: true }
+    // refs: https://github.com/lobehub/lobe-chat/issues/6825
+    excludeUsage: true,
     handlePayload: (payload) => ({
       ...(payload.max_tokens !== undefined && { max_tokens: payload.max_tokens }),
       messages: payload.messages as any,
@@ -30,20 +33,30 @@ export const LobeMistralAI = LobeOpenAICompatibleFactory({
   debug: {
     chatCompletion: () => process.env.DEBUG_MISTRAL_CHAT_COMPLETION === '1',
   },
-  models: {
-    transformModel: (m) => {
-      const model = m as unknown as MistralModelCard;
+  models: async ({ client }) => {
+    const { LOBE_DEFAULT_MODEL_LIST } = await import('@/config/aiModels');
 
-      return {
-        contextWindowTokens: model.max_context_length,
-        description: model.description,
-        displayName: LOBE_DEFAULT_MODEL_LIST.find((m) => model.id === m.id)?.displayName ?? undefined,
-        enabled: LOBE_DEFAULT_MODEL_LIST.find((m) => model.id === m.id)?.enabled || false,
-        functionCall: model.capabilities.function_calling,
-        id: model.id,
-        vision: model.capabilities.vision,
-      };
-    },
+    const modelsPage = (await client.models.list()) as any;
+    const modelList: MistralModelCard[] = modelsPage.data;
+
+    return modelList
+      .map((model) => {
+        const knownModel = LOBE_DEFAULT_MODEL_LIST.find(
+          (m) => model.id.toLowerCase() === m.id.toLowerCase(),
+        );
+
+        return {
+          contextWindowTokens: model.max_context_length,
+          description: model.description,
+          displayName: knownModel?.displayName ?? undefined,
+          enabled: knownModel?.enabled || false,
+          functionCall: model.capabilities.function_calling,
+          id: model.id,
+          reasoning: knownModel?.abilities?.reasoning || false,
+          vision: model.capabilities.vision,
+        };
+      })
+      .filter(Boolean) as ChatModelCard[];
   },
   provider: ModelProvider.Mistral,
 });

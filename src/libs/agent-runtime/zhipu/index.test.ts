@@ -5,21 +5,12 @@ import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ChatStreamCallbacks, LobeOpenAI, LobeOpenAICompatibleRuntime } from '@/libs/agent-runtime';
 import * as debugStreamModule from '@/libs/agent-runtime/utils/debugStream';
 
-import * as authTokenModule from './authToken';
 import { LobeZhipuAI } from './index';
 
 const bizErrorType = 'ProviderBizError';
 const invalidErrorType = 'InvalidProviderAPIKey';
 
-// Mock相关依赖
-vi.mock('./authToken');
-
 describe('LobeZhipuAI', () => {
-  beforeEach(() => {
-    // Mock generateApiToken
-    vi.spyOn(authTokenModule, 'generateApiToken').mockResolvedValue('mocked_token');
-  });
-
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -72,7 +63,7 @@ describe('LobeZhipuAI', () => {
       // 准备 callback 和 headers
       const mockCallback: ChatStreamCallbacks = {
         onStart: vi.fn(),
-        onToken: vi.fn(),
+        onText: vi.fn(),
       };
       const mockHeaders = { 'Custom-Header': 'TestValue' };
 
@@ -89,7 +80,7 @@ describe('LobeZhipuAI', () => {
       // 验证 callback 被调用
       await result.text(); // 确保流被消费
       expect(mockCallback.onStart).toHaveBeenCalled();
-      expect(mockCallback.onToken).toHaveBeenCalledWith('hello');
+      expect(mockCallback.onText).toHaveBeenCalledWith('hello');
 
       // 验证 headers 被正确传递
       expect(result.headers.get('Custom-Header')).toEqual('TestValue');

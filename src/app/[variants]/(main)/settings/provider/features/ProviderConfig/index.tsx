@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { FormInput, FormPassword } from '@/components/FormInput';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import { AES_GCM_URL, BASE_PROVIDER_DOC_URL } from '@/const/url';
-import { isServerMode } from '@/const/version';
+import { isDesktop, isServerMode } from '@/const/version';
 import { aiProviderSelectors, useAiInfraStore } from '@/store/aiInfra';
 import {
   AiProviderDetailItem,
@@ -127,7 +127,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
       defaultShowBrowserRequest,
       disableBrowserRequest,
       showChecker = true,
-    } = settings;
+    } = settings || {};
     const { t } = useTranslation('modelProvider');
     const [form] = Form.useForm();
     const { cx, styles, theme } = useStyles();
@@ -244,12 +244,14 @@ const ProviderConfig = memo<ProviderConfigProps>(
 
     /*
      * Conditions to show Client Fetch Switch
+     * 0. is not desktop app
      * 1. provider is not disabled browser request
      * 2. provider show browser request by default
      * 3. Provider allow to edit endpoint and the value of endpoint is not empty
      * 4. There is an apikey provided by user
      */
     const showClientFetch =
+      !isDesktop &&
       !disableBrowserRequest &&
       (defaultShowBrowserRequest ||
         (showEndpoint && isProviderEndpointNotEmpty) ||
@@ -258,7 +260,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
       children: isLoading ? (
         <Skeleton.Button active className={styles.switchLoading} />
       ) : (
-        <Switch disabled={configUpdating} value={isFetchOnClient} />
+        <Switch checked={isFetchOnClient} disabled={configUpdating} />
       ),
       desc: t('providerModels.config.fetchOnClient.desc'),
       label: t('providerModels.config.fetchOnClient.title'),
@@ -275,7 +277,11 @@ const ProviderConfig = memo<ProviderConfigProps>(
             children: isLoading ? (
               <Skeleton.Button active />
             ) : (
-              <Checker checkErrorRender={checkErrorRender} model={checkModel!} provider={id} />
+              <Checker
+                checkErrorRender={checkErrorRender}
+                model={data?.checkModel || checkModel!}
+                provider={id}
+              />
             ),
             desc: t('providerModels.config.checker.desc'),
             label: t('providerModels.config.checker.title'),
@@ -320,19 +326,21 @@ const ProviderConfig = memo<ProviderConfigProps>(
               {name}
             </Flexbox>
           ) : (
-            <ProviderCombine provider={id} size={24} />
+            <>
+              <ProviderCombine provider={id} size={24} />
+              <Tooltip title={t('providerModels.config.helpDoc')}>
+                <Link
+                  href={urlJoin(BASE_PROVIDER_DOC_URL, id)}
+                  onClick={(e) => e.stopPropagation()}
+                  target={'_blank'}
+                >
+                  <Center className={styles.help} height={20} width={20}>
+                    ?
+                  </Center>
+                </Link>
+              </Tooltip>
+            </>
           )}
-          <Tooltip title={t('providerModels.config.helpDoc')}>
-            <Link
-              href={urlJoin(BASE_PROVIDER_DOC_URL, id)}
-              onClick={(e) => e.stopPropagation()}
-              target={'_blank'}
-            >
-              <Center className={styles.help} height={20} width={20}>
-                ?
-              </Center>
-            </Link>
-          </Tooltip>
         </Flexbox>
       ),
     };

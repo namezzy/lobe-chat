@@ -42,6 +42,17 @@
     "sessionWithName": "對話設定 · {{name}}",
     "title": "設定"
   },
+  "hotkey": {
+    "conflicts": "與現有快捷鍵衝突",
+    "group": {
+      "conversation": "對話",
+      "essential": "基本"
+    },
+    "invalidCombination": "快捷鍵需要至少包含一個修飾鍵 (Ctrl, Alt, Shift) 和一個常規鍵",
+    "record": "按下按鍵以錄製快捷鍵",
+    "reset": "重置為預設快捷鍵",
+    "title": "快速鍵"
+  },
   "llm": {
     "aesGcm": "您的金鑰與代理地址等將使用 <1>AES-GCM</1> 加密演算法進行加密",
     "apiKey": {
@@ -204,8 +215,8 @@
       "title": "開啟推理強度調整"
     },
     "frequencyPenalty": {
-      "desc": "數值越大，越有可能降低重複字詞",
-      "title": "頻率懲罰度"
+      "desc": "值越大，用詞越豐富多樣；值越低，用詞更樸實簡單",
+      "title": "詞彙豐富度"
     },
     "maxTokens": {
       "desc": "單次互動所使用的最大 Token 數",
@@ -215,9 +226,12 @@
       "desc": "{{provider}} 模型",
       "title": "模型"
     },
+    "params": {
+      "title": "高級參數"
+    },
     "presencePenalty": {
-      "desc": "數值越大，越有可能擴展到新話題",
-      "title": "話題新鮮度"
+      "desc": "值越大，越傾向不同的表達方式，避免概念重複；值越小，越傾向使用重複的概念或敘述，表達更具一致性",
+      "title": "表述發散度"
     },
     "reasoningEffort": {
       "desc": "值越大，推理能力越強，但可能會增加回應時間和 Token 消耗",
@@ -229,14 +243,14 @@
       "title": "推理強度"
     },
     "temperature": {
-      "desc": "數值越大，回覆越隨機",
-      "title": "隨機性",
-      "titleWithValue": "隨機性 {{value}}"
+      "desc": "數值越大，回答越有創意和想像力；數值越小，回答越嚴謹",
+      "title": "創意活躍度",
+      "warning": "創意活躍度數值過大，輸出可能會產生亂碼"
     },
     "title": "模型設定",
     "topP": {
-      "desc": "與隨機性類似，但不要和隨機性一起更改",
-      "title": "核採樣"
+      "desc": "考慮多少種可能性，值越大，接受更多可能的回答；值越小，傾向選擇最可能的回答。不推薦和創意活躍度一起更改",
+      "title": "思維開放度"
     }
   },
   "settingPlugin": {
@@ -286,7 +300,7 @@
       "title": "語音識別語種"
     },
     "sttService": {
-      "desc": "其中 broswer 為瀏覽器原生的語音識別服務",
+      "desc": "其中 browser 為瀏覽器原生的語音識別服務",
       "title": "語音識別服務"
     },
     "title": "語音服務",
@@ -331,6 +345,33 @@
       "title": "主題"
     },
     "title": "主題設定"
+  },
+  "storage": {
+    "actions": {
+      "export": {
+        "button": "匯出",
+        "exportType": {
+          "agent": "匯出助手設定",
+          "agentWithMessage": "匯出助手和訊息",
+          "all": "匯出全域設定和所有助手資料",
+          "allAgent": "匯出所有助手設定",
+          "allAgentWithMessage": "匯出所有助手和訊息",
+          "globalSetting": "匯出全域設定"
+        },
+        "title": "匯出資料"
+      },
+      "import": {
+        "button": "匯入",
+        "title": "匯入資料"
+      },
+      "title": "進階操作"
+    },
+    "desc": "當前瀏覽器中的儲存用量",
+    "embeddings": {
+      "used": "向量儲存"
+    },
+    "title": "資料儲存",
+    "used": "儲存用量"
   },
   "submitAgentModal": {
     "button": "提交助手",
@@ -422,8 +463,10 @@
     "agent": "默認助手",
     "common": "通用設置",
     "experiment": "實驗",
+    "hotkey": "快速鍵",
     "llm": "語言模型",
     "provider": "AI 服務商",
+    "storage": "資料儲存",
     "sync": "雲端同步",
     "system-agent": "系統助手",
     "tts": "語音服務"

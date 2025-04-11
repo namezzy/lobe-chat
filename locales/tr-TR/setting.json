@@ -42,6 +42,17 @@
     "sessionWithName": "Oturum Ayarları · {{name}}",
     "title": "Ayarlar"
   },
+  "hotkey": {
+    "conflicts": "Mevcut kısayol tuşlarıyla çakışıyor",
+    "group": {
+      "conversation": "Sohbet",
+      "essential": "Temel"
+    },
+    "invalidCombination": "Kısayol tuşu en az bir modifiye tuşu (Ctrl, Alt, Shift) ve bir normal tuş içermelidir",
+    "record": "Kısayol tuşunu kaydetmek için tuşa basın",
+    "reset": "Varsayılan kısayol tuşlarına sıfırla",
+    "title": "Kısayollar"
+  },
   "llm": {
     "aesGcm": "Anahtarınız ve vekil adresiniz <1>AES-GCM</1> şifreleme algoritması kullanılarak şifrelenecektir",
     "apiKey": {
@@ -204,8 +215,8 @@
       "title": "Akıl yürütme yoğunluğunu ayarla"
     },
     "frequencyPenalty": {
-      "desc": "Değer ne kadar yüksekse, tekrarlayan kelimeleri azaltma olasılığı o kadar yüksektir",
-      "title": "Frequency Penalty"
+      "desc": "Değer ne kadar büyükse, kelime dağarcığı o kadar zengin ve çeşitli olur; değer ne kadar düşükse, kelimeler o kadar sade ve basit olur.",
+      "title": "Kelime Zenginliği"
     },
     "maxTokens": {
       "desc": "Her etkileşim için kullanılan maksimum token sayısı",
@@ -215,9 +226,12 @@
       "desc": "{{provider}} Model",
       "title": "Model"
     },
+    "params": {
+      "title": "Gelişmiş Parametreler"
+    },
     "presencePenalty": {
-      "desc": "Değer ne kadar yüksekse, yeni konulara genişleme olasılığı o kadar yüksektir",
-      "title": "Presence Penalty"
+      "desc": "Değer ne kadar büyükse, farklı ifade biçimlerine yönelme eğilimi artar, kavram tekrarından kaçınılır; değer ne kadar küçükse, tekrar eden kavramlar veya anlatımlar kullanma eğilimi artar, ifade daha tutarlı olur.",
+      "title": "İfade Çeşitliliği"
     },
     "reasoningEffort": {
       "desc": "Değer ne kadar yüksekse, akıl yürütme yeteneği o kadar güçlüdür, ancak yanıt süresi ve Token tüketimini artırabilir",
@@ -229,14 +243,14 @@
       "title": "Akıl yürütme yoğunluğu"
     },
     "temperature": {
-      "desc": "Değer ne kadar yüksekse, yanıt o kadar rastgele olur",
-      "title": "Randomness",
-      "titleWithValue": "temperature {{value}}"
+      "desc": "Değer ne kadar büyükse, cevap o kadar yaratıcı ve hayal gücü dolu olur; değer ne kadar küçükse, cevap o kadar titizdir.",
+      "title": "Yaratıcılık Aktifliği",
+      "warning": "Yaratıcılık aktifliği değeri çok büyükse, çıktı bozulabilir."
     },
     "title": "Model Ayarları",
     "topP": {
-      "desc": "temperature gibi, ancak temperature ile birlikte değişmez",
-      "title": "Top P"
+      "desc": "Ne kadar olasılığı dikkate alır, değer ne kadar büyükse, daha fazla olası cevabı kabul eder; değer ne kadar küçükse, en olası cevabı seçme eğilimindedir. Yaratıcılık aktifliği ile birlikte değiştirilmesi önerilmez.",
+      "title": "Düşünce Açıklığı"
     }
   },
   "settingPlugin": {
@@ -332,6 +346,33 @@
     },
     "title": "Tema Ayarları"
   },
+  "storage": {
+    "actions": {
+      "export": {
+        "button": "Dışa Aktar",
+        "exportType": {
+          "agent": "Yardımcı Ayarlarını Dışa Aktar",
+          "agentWithMessage": "Yardımcı ve Mesajları Dışa Aktar",
+          "all": "Küresel Ayarları ve Tüm Yardımcı Verilerini Dışa Aktar",
+          "allAgent": "Tüm Yardımcı Ayarlarını Dışa Aktar",
+          "allAgentWithMessage": "Tüm Yardımcıları ve Mesajları Dışa Aktar",
+          "globalSetting": "Küresel Ayarları Dışa Aktar"
+        },
+        "title": "Veri Dışa Aktar"
+      },
+      "import": {
+        "button": "İçe Aktar",
+        "title": "Veri İçe Aktar"
+      },
+      "title": "Gelişmiş İşlemler"
+    },
+    "desc": "Mevcut tarayıcıdaki depolama kullanımı",
+    "embeddings": {
+      "used": "Vektör Depolama"
+    },
+    "title": "Veri Depolama",
+    "used": "Depolama Kullanımı"
+  },
   "submitAgentModal": {
     "button": "Asistan Gönder",
     "identifier": "Asistan Kimliği",
@@ -422,8 +463,10 @@
     "agent": "Varsayılan Asistan",
     "common": "Genel Ayarlar",
     "experiment": "Deney",
+    "hotkey": "Kısayollar",
     "llm": "Modeller",
     "provider": "Yapay Zeka Hizmet Sağlayıcısı",
+    "storage": "Veri Depolama",
     "sync": "Bulut Senkronizasyonu",
     "system-agent": "Sistem Asistanı",
     "tts": "Metin Seslendirme"

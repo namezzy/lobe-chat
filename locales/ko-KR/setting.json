@@ -42,6 +42,17 @@
     "sessionWithName": "세션 설정 · {{name}}",
     "title": "설정"
   },
+  "hotkey": {
+    "conflicts": "기존 단축키와 충돌",
+    "group": {
+      "conversation": "대화",
+      "essential": "기본"
+    },
+    "invalidCombination": "단축키는 최소한 하나의 수정 키(Ctrl, Alt, Shift)와 하나의 일반 키를 포함해야 합니다",
+    "record": "단축키를 녹음하려면 키를 누르세요",
+    "reset": "기본 단축키로 재설정",
+    "title": "단축키"
+  },
   "llm": {
     "aesGcm": "귀하의 키 및 프록시 주소는 <1>AES-GCM</1> 암호화 알고리즘을 사용하여 암호화됩니다",
     "apiKey": {
@@ -204,8 +215,8 @@
       "title": "추론 강도 조정 활성화"
     },
     "frequencyPenalty": {
-      "desc": "값이 클수록 반복 단어가 줄어듭니다",
-      "title": "빈도 패널티"
+      "desc": "값이 클수록 단어 선택이 더 다양하고 풍부해지며, 값이 작을수록 단어 선택이 더 간단하고 소박해집니다.",
+      "title": "어휘 다양성"
     },
     "maxTokens": {
       "desc": "단일 상호 작용에 사용되는 최대 토큰 수",
@@ -215,9 +226,12 @@
       "desc": "{{provider}} 모델",
       "title": "모델"
     },
+    "params": {
+      "title": "고급 매개변수"
+    },
     "presencePenalty": {
-      "desc": "값이 클수록 새로운 주제로 확장될 가능성이 높아집니다",
-      "title": "주제 신선도"
+      "desc": "값이 클수록 다양한 표현 방식으로 기울어져 개념의 반복을 피하고, 값이 작을수록 반복적인 개념이나 서술을 사용하는 경향이 있어 표현이 더 일관됩니다.",
+      "title": "표현의 다양성"
     },
     "reasoningEffort": {
       "desc": "값이 클수록 추론 능력이 강해지지만, 응답 시간과 토큰 소모가 증가할 수 있습니다.",
@@ -229,14 +243,14 @@
       "title": "추론 강도"
     },
     "temperature": {
-      "desc": "값이 클수록 응답이 더 무작위해집니다",
-      "title": "랜덤성",
-      "titleWithValue": "랜덤성 {{value}}"
+      "desc": "값이 클수록 답변이 더 창의적이고 상상력이 풍부해지며, 값이 작을수록 답변이 더 엄격해집니다.",
+      "title": "창의성 활성화",
+      "warning": "창의성 활성화 값이 너무 크면 출력이 깨질 수 있습니다."
     },
     "title": "모델 설정",
     "topP": {
-      "desc": "랜덤성과 유사하지만 함께 변경하지 마세요",
-      "title": "상위 P 샘플링"
+      "desc": "얼마나 많은 가능성을 고려할지, 값이 클수록 더 많은 가능성 있는 답변을 수용하고, 값이 작을수록 가장 가능성이 높은 답변을 선택하는 경향이 있습니다. 창의성 활성화와 함께 변경하는 것은 권장하지 않습니다.",
+      "title": "사고 개방성"
     }
   },
   "settingPlugin": {
@@ -332,6 +346,33 @@
     },
     "title": "테마 설정"
   },
+  "storage": {
+    "actions": {
+      "export": {
+        "button": "내보내기",
+        "exportType": {
+          "agent": "도우미 설정 내보내기",
+          "agentWithMessage": "도우미와 메시지 내보내기",
+          "all": "전체 설정 및 모든 도우미 데이터 내보내기",
+          "allAgent": "모든 도우미 설정 내보내기",
+          "allAgentWithMessage": "모든 도우미와 메시지 내보내기",
+          "globalSetting": "전체 설정 내보내기"
+        },
+        "title": "데이터 내보내기"
+      },
+      "import": {
+        "button": "가져오기",
+        "title": "데이터 가져오기"
+      },
+      "title": "고급 작업"
+    },
+    "desc": "현재 브라우저의 저장 용량",
+    "embeddings": {
+      "used": "벡터 저장소"
+    },
+    "title": "데이터 저장소",
+    "used": "저장 용량"
+  },
   "submitAgentModal": {
     "button": "에이전트 제출",
     "identifier": "에이전트 식별자",
@@ -422,8 +463,10 @@
     "agent": "기본 에이전트",
     "common": "일반 설정",
     "experiment": "실험",
+    "hotkey": "단축키",
     "llm": "언어 모델",
     "provider": "AI 서비스 제공자",
+    "storage": "데이터 저장소",
     "sync": "클라우드 동기화",
     "system-agent": "시스템 도우미",
     "tts": "음성 서비스"

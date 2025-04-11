@@ -80,6 +80,14 @@ export const parseModelString = (modelString: string = '', withDeploymentName = 
             model.abilities!.files = true;
             break;
           }
+          case 'search': {
+            model.abilities!.search = true;
+            break;
+          }
+          case 'imageOutput': {
+            model.abilities!.imageOutput = true;
+            break;
+          }
           default: {
             console.warn(`Unknown capability: ${capability}`);
           }

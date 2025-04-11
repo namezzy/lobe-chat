@@ -1,21 +1,58 @@
-import { ChatStreamCallbacks } from '@/libs/agent-runtime';
+import { ModelTokensUsage } from '@/types/message';
 
 import { AgentRuntimeErrorType } from '../../error';
+import { parseToolCalls } from '../../helpers';
+import { ChatStreamCallbacks } from '../../types';
 
-export interface StreamStack {
+/**
+ * context in the stream to save temporarily data
+ */
+export interface StreamContext {
   id: string;
+  /**
+   * As pplx citations is in every chunk, but we only need to return it once
+   * this flag is used to check if the pplx citation is returned,and then not return it again.
+   * Same as Hunyuan and Wenxin
+   */
+  returnedCitation?: boolean;
+  thinking?: {
+    id: string;
+    name: string;
+  };
   tool?: {
     id: string;
     index: number;
     name: string;
   };
   toolIndex?: number;
+  usage?: ModelTokensUsage;
 }
 
 export interface StreamProtocolChunk {
   data: any;
   id?: string;
-  type: 'text' | 'tool_calls' | 'data' | 'stop' | 'error' | 'reasoning';
+  type: // pure text
+  | 'text'
+    // base64 format image
+    | 'base64_image'
+    // Tools use
+    | 'tool_calls'
+    // Model Thinking
+    | 'reasoning'
+    // use for reasoning signature, maybe only anthropic
+    | 'reasoning_signature'
+    // flagged reasoning signature
+    | 'flagged_reasoning_signature'
+    // Search or Grounding
+    | 'grounding'
+    // stop signal
+    | 'stop'
+    // Error
+    | 'error'
+    // token usage
+    | 'usage'
+    // unknown data result
+    | 'data';
 }
 
 export interface StreamToolCallChunkData {
@@ -85,33 +122,50 @@ export const convertIterableToStream = <T>(stream: AsyncIterable<T>) => {
  * Create a transformer to convert the response into an SSE format
  */
 export const createSSEProtocolTransformer = (
-  transformer: (chunk: any, stack: StreamStack) => StreamProtocolChunk,
-  streamStack?: StreamStack,
+  transformer: (chunk: any, stack: StreamContext) => StreamProtocolChunk | StreamProtocolChunk[],
+  streamStack?: StreamContext,
 ) =>
   new TransformStream({
     transform: (chunk, controller) => {
-      const { type, id, data } = transformer(chunk, streamStack || { id: '' });
+      const result = transformer(chunk, streamStack || { id: '' });
 
-      controller.enqueue(`id: ${id}\n`);
-      controller.enqueue(`event: ${type}\n`);
-      controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+      const buffers = Array.isArray(result) ? result : [result];
+
+      buffers.forEach(({ type, id, data }) => {
+        controller.enqueue(`id: ${id}\n`);
+        controller.enqueue(`event: ${type}\n`);
+        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+      });
     },
   });
 
 export function createCallbacksTransformer(cb: ChatStreamCallbacks | undefined) {
   const textEncoder = new TextEncoder();
-  let aggregatedResponse = '';
-  let currentType = '';
+  let aggregatedText = '';
+  let aggregatedThinking: string | undefined = undefined;
+  let usage: ModelTokensUsage | undefined;
+  let grounding: any;
+  let toolsCalling: any;
+
+  let currentType = '' as unknown as StreamProtocolChunk['type'];
   const callbacks = cb || {};
 
   return new TransformStream({
     async flush(): Promise<void> {
+      const data = {
+        grounding,
+        text: aggregatedText,
+        thinking: aggregatedThinking,
+        toolsCalling,
+        usage,
+      };
+
       if (callbacks.onCompletion) {
-        await callbacks.onCompletion(aggregatedResponse);
+        await callbacks.onCompletion(data);
       }
 
       if (callbacks.onFinal) {
-        await callbacks.onFinal(aggregatedResponse);
+        await callbacks.onFinal(data);
       }
     },
 
@@ -124,22 +178,53 @@ export function createCallbacksTransformer(cb: ChatStreamCallbacks | undefined) 
 
       // track the type of the chunk
       if (chunk.startsWith('event:')) {
-        currentType = chunk.split('event:')[1].trim();
+        currentType = chunk.split('event:')[1].trim() as unknown as StreamProtocolChunk['type'];
       }
       // if the message is a data chunk, handle the callback
       else if (chunk.startsWith('data:')) {
         const content = chunk.split('data:')[1].trim();
 
+        let data: any = undefined;
+        try {
+          data = JSON.parse(content);
+        } catch {}
+
+        if (!data) return;
+
         switch (currentType) {
           case 'text': {
-            await callbacks.onText?.(content);
-            await callbacks.onToken?.(JSON.parse(content));
+            aggregatedText += data;
+            await callbacks.onText?.(data);
+            break;
+          }
+
+          case 'reasoning': {
+            if (!aggregatedThinking) {
+              aggregatedThinking = '';
+            }
+
+            aggregatedThinking += data;
+            await callbacks.onThinking?.(data);
+            break;
+          }
+
+          case 'usage': {
+            usage = data;
+            await callbacks.onUsage?.(data);
+            break;
+          }
+
+          case 'grounding': {
+            grounding = data;
+            await callbacks.onGrounding?.(data);
             break;
           }
 
           case 'tool_calls': {
-            // TODO: make on ToolCall callback
-            await callbacks.onToolCall?.();
+            if (!toolsCalling) toolsCalling = [];
+            toolsCalling = parseToolCalls(toolsCalling, data);
+
+            await callbacks.onToolsCalling?.({ chunk: data, toolsCalling });
           }
         }
       }
@@ -170,3 +255,37 @@ export const createFirstErrorHandleTransformer = (
     },
   });
 };
+
+/**
+ * create a transformer to remove SSE format data
+ */
+export const createSSEDataExtractor = () =>
+  new TransformStream({
+    transform(chunk: Uint8Array, controller) {
+      // 将 Uint8Array 转换为字符串
+      const text = new TextDecoder().decode(chunk, { stream: true });
+
+      // 处理多行数据的情况
+      const lines = text.split('\n');
+
+      for (const line of lines) {
+        // 只处理以 "data: " 开头的行
+        if (line.startsWith('data: ')) {
+          // 提取 "data: " 后面的实际数据
+          const jsonText = line.slice(6);
+
+          // 跳过心跳消息
+          if (jsonText === '[DONE]') continue;
+
+          try {
+            // 解析 JSON 数据
+            const data = JSON.parse(jsonText);
+            // 将解析后的数据传递给下一个处理器
+            controller.enqueue(data);
+          } catch {
+            console.warn('Failed to parse SSE data:', jsonText);
+          }
+        }
+      }
+    },
+  });

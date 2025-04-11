@@ -13,7 +13,7 @@ export interface ChatCompletionErrorPayload {
   endpoint?: string;
   error: object;
   errorType: ILobeAgentRuntimeErrorType;
-  provider: ModelProvider;
+  provider: string;
 }
 
 export interface CreateChatCompletionOptions {
@@ -26,10 +26,15 @@ export enum ModelProvider {
   Ai360 = 'ai360',
   Anthropic = 'anthropic',
   Azure = 'azure',
+  AzureAI = 'azureai',
   Baichuan = 'baichuan',
   Bedrock = 'bedrock',
   Cloudflare = 'cloudflare',
+  Cohere = 'cohere',
   DeepSeek = 'deepseek',
+  /**
+   * @deprecated
+   */
   Doubao = 'doubao',
   FireworksAI = 'fireworksai',
   GiteeAI = 'giteeai',
@@ -39,26 +44,37 @@ export enum ModelProvider {
   Higress = 'higress',
   HuggingFace = 'huggingface',
   Hunyuan = 'hunyuan',
+  InfiniAI = 'infiniai',
   InternLM = 'internlm',
+  Jina = 'jina',
   LMStudio = 'lmstudio',
   Minimax = 'minimax',
   Mistral = 'mistral',
   Moonshot = 'moonshot',
   Novita = 'novita',
+  Nvidia = 'nvidia',
   Ollama = 'ollama',
   OpenAI = 'openai',
   OpenRouter = 'openrouter',
+  PPIO = 'ppio',
   Perplexity = 'perplexity',
   Qwen = 'qwen',
+  SambaNova = 'sambanova',
+  Search1API = 'search1api',
   SenseNova = 'sensenova',
   SiliconCloud = 'siliconcloud',
   Spark = 'spark',
   Stepfun = 'stepfun',
   Taichu = 'taichu',
+  TencentCloud = 'tencentcloud',
   TogetherAI = 'togetherai',
   Upstage = 'upstage',
+  VLLM = 'vllm',
+  VertexAI = 'vertexai',
+  Volcengine = 'volcengine',
   Wenxin = 'wenxin',
   XAI = 'xai',
+  Xinference = 'xinference',
   ZeroOne = 'zeroone',
   ZhiPu = 'zhipu',
 }

@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
+import { AiModelModel } from '@/database/models/aiModel';
+import { UserModel } from '@/database/models/user';
 import { AiInfraRepos } from '@/database/repositories/aiInfra';
-import { serverDB } from '@/database/server';
-import { AiModelModel } from '@/database/server/models/aiModel';
-import { UserModel } from '@/database/server/models/user';
 import { authedProcedure, router } from '@/libs/trpc';
+import { serverDatabase } from '@/libs/trpc/lambda';
 import { getServerGlobalConfig } from '@/server/globalConfig';
 import { KeyVaultsGateKeeper } from '@/server/modules/KeyVaultsEncrypt';
 import {
@@ -15,22 +15,22 @@ import {
 } from '@/types/aiModel';
 import { ProviderConfig } from '@/types/user/settings';
 
-const aiModelProcedure = authedProcedure.use(async (opts) => {
+const aiModelProcedure = authedProcedure.use(serverDatabase).use(async (opts) => {
   const { ctx } = opts;
 
   const gateKeeper = await KeyVaultsGateKeeper.initWithEnvKey();
-  const { aiProvider } = getServerGlobalConfig();
+  const { aiProvider } = await getServerGlobalConfig();
 
   return opts.next({
     ctx: {
       aiInfraRepos: new AiInfraRepos(
-        serverDB,
+        ctx.serverDB,
         ctx.userId,
         aiProvider as Record<string, ProviderConfig>,
       ),
-      aiModelModel: new AiModelModel(serverDB, ctx.userId),
+      aiModelModel: new AiModelModel(ctx.serverDB, ctx.userId),
       gateKeeper,
-      userModel: new UserModel(serverDB, ctx.userId),
+      userModel: new UserModel(ctx.serverDB, ctx.userId),
     },
   });
 });
@@ -59,6 +59,11 @@ export const aiModelRouter = router({
       return ctx.aiModelModel.batchUpdateAiModels(input.id, input.models);
     }),
 
+  clearModelsByProvider: aiModelProcedure
+    .input(z.object({ providerId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      return ctx.aiModelModel.clearModelsByProvider(input.providerId);
+    }),
   clearRemoteModels: aiModelProcedure
     .input(z.object({ providerId: z.string() }))
     .mutation(async ({ input, ctx }) => {

@@ -17,6 +17,7 @@ const FETCH_AI_PROVIDER_MODEL_LIST_KEY = 'FETCH_AI_PROVIDER_MODELS';
 export interface AiModelAction {
   batchToggleAiModels: (ids: string[], enabled: boolean) => Promise<void>;
   batchUpdateAiModels: (models: AiProviderModelListItem[]) => Promise<void>;
+  clearModelsByProvider: (provider: string) => Promise<void>;
   clearRemoteModels: (provider: string) => Promise<void>;
   createNewAiModel: (params: CreateAiModelParams) => Promise<void>;
   fetchRemoteModelList: (providerId: string) => Promise<void>;
@@ -55,6 +56,10 @@ export const createAiModelSlice: StateCreator<
     await aiModelService.batchUpdateAiModels(id, models);
     await get().refreshAiModelList();
   },
+  clearModelsByProvider: async (provider) => {
+    await aiModelService.clearModelsByProvider(provider);
+    await get().refreshAiModelList();
+  },
   clearRemoteModels: async (provider) => {
     await aiModelService.clearRemoteModels(provider);
     await get().refreshAiModelList();
@@ -66,7 +71,7 @@ export const createAiModelSlice: StateCreator<
   fetchRemoteModelList: async (providerId) => {
     const { modelsService } = await import('@/services/models');
 
-    const data = await modelsService.getChatModels(providerId);
+    const data = await modelsService.getModels(providerId);
     if (data) {
       await get().batchUpdateAiModels(
         data.map((model) => ({

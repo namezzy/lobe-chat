@@ -6,5 +6,43 @@
     "generating": "Bezig met genereren...",
     "images": "Afbeeldingen:",
     "prompt": "prompt"
+  },
+  "search": {
+    "createNewSearch": "Maak een nieuwe zoekopdracht",
+    "emptyResult": "Geen resultaten gevonden, pas alstublieft uw zoekwoorden aan en probeer het opnieuw",
+    "genAiMessage": "Maak assistentbericht",
+    "includedTooltip": "De huidige zoekresultaten worden opgenomen in de context van de sessie",
+    "keywords": "Zoekwoorden:",
+    "scoreTooltip": "Relevantie score, hoe hoger de score, hoe relevanter het is voor de zoekwoorden",
+    "searchBar": {
+      "button": "Zoeken",
+      "placeholder": "Zoekwoorden",
+      "tooltip": "De zoekresultaten worden opnieuw opgehaald en er wordt een nieuwe samenvattingsbericht aangemaakt"
+    },
+    "searchCategory": {
+      "placeholder": "Zoekcategorie",
+      "title": "Zoekcategorie:",
+      "value": {
+        "files": "Bestanden",
+        "general": "Algemeen",
+        "images": "Afbeeldingen",
+        "it": "Informatietechnologie",
+        "map": "Kaart",
+        "music": "Muziek",
+        "news": "Nieuws",
+        "science": "Wetenschap",
+        "social_media": "Sociale media",
+        "videos": "Video's"
+      }
+    },
+    "searchEngine": {
+      "placeholder": "Zoekmachine",
+      "title": "Zoekmachine:"
+    },
+    "searchResult": "Aantal zoekresultaten:",
+    "searchTimeRange": "Tijdspanne:",
+    "summary": "Samenvatting",
+    "summaryTooltip": "Samenvatting van de huidige inhoud",
+    "viewMoreResults": "Bekijk meer {{results}} resultaten"
   }
 }

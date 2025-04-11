@@ -4,6 +4,7 @@ import { fileEnv } from '@/config/file';
 import { knowledgeEnv } from '@/config/knowledge';
 import { langfuseEnv } from '@/config/langfuse';
 import { enableNextAuth } from '@/const/auth';
+import { isDesktop } from '@/const/version';
 import { parseSystemAgent } from '@/server/globalConfig/parseSystemAgent';
 import { GlobalServerConfig } from '@/types/serverConfig';
 
@@ -12,7 +13,7 @@ import { genServerAiProvidersConfig } from './genServerAiProviderConfig';
 import { parseAgentConfig } from './parseDefaultAgent';
 import { parseFilesConfig } from './parseFilesConfig';
 
-export const getServerGlobalConfig = () => {
+export const getServerGlobalConfig = async () => {
   const { ACCESS_CODES, DEFAULT_AGENT_CONFIG } = getAppConfig();
 
   const config: GlobalServerConfig = {
@@ -36,7 +37,18 @@ export const getServerGlobalConfig = () => {
 
       /* ↑ cloud slot ↑ */
       ollama: {
-        fetchOnClient: !process.env.OLLAMA_PROXY_URL,
+        enabled: isDesktop ? true : undefined,
+        fetchOnClient: isDesktop ? false : !process.env.OLLAMA_PROXY_URL,
+      },
+      openai: {
+        enabled: isDesktop ? false : undefined,
+      },
+      tencentcloud: {
+        enabledKey: 'ENABLED_TENCENT_CLOUD',
+        modelListKey: 'TENCENT_CLOUD_MODEL_LIST',
+      },
+      volcengine: {
+        withDeploymentName: true,
       },
     }),
     defaultAgent: {
